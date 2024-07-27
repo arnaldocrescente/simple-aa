@@ -23,7 +23,7 @@ jobs:
 
       - run: make start-cleaned
       - name: Run tests
-        run: make run-tests
+        run: make run-test
       - run: make down
       - name: Store coverage files
         uses: actions/upload-artifact@v4

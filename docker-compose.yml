@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  core:
+    build: ./apps/core
+    container_name: core
+    image: simple-aa/core/dev
+    env_file:
+      - ./apps/core/.local.env
+      - ./db.local.env
+    tty: true
+    volumes:
+      - ./apps/core/src/app:/opt/deploy/app
+      - ./apps/core/scripts:/opt/deploy/scripts
+    ports:
+      - 8000:8000
+    depends_on:
+      mailer:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: curl --fail http://localhost:8000/health || exit 1
+      interval: 2s
+      timeout: 5s
+      retries: 5
+      start_period: 2s
+
+  mailer:
+    build: ./apps/mailer
+    container_name: mailer
+    image: simple-aa/mailer/dev
+    env_file:
+      - ./apps/mailer/.local.env
+    command: python -m uvicorn --host=0.0.0.0 app.main:app --reload
+    tty: true
+    volumes:
+      - ./apps/mailer/src/app:/opt/deploy/app
+    ports:
+      - 8001:8000
+    expose:
+      - 8000
+    restart: on-failure
+    healthcheck:
+      test: curl --fail http://localhost:8000/health || exit 1
+      interval: 2s
+      timeout: 5s
+      retries: 5
+      start_period: 2s
+
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    expose:
+      - 5432
+    env_file:
+      - db.local.env
+    volumes:
+      - /tmp/docker-data/simple-aa/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d auth -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

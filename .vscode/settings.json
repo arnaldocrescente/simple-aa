@@ -1,0 +1,18 @@
+{
+  "editor.formatOnSave": true,
+  "[python]": {
+    "editor.formatOnType": false,
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.rulers": [
+      79
+    ],
+  },
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/*.pyc": true,
+    "**/*.Identifier": true,
+    "**/__pycache__": true
+  }
+}

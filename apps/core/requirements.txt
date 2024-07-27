@@ -10,3 +10,4 @@ psycopg[binary]
 passlib
 pydantic_settings
 coverage
+pylint

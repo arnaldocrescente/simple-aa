@@ -90,7 +90,7 @@ apply-migration:	## Perform db migration, args: service=SERVICE_NAME, default co
 # UTILS COMMANDS
 .PHONY: lint
 lint:
-	docker-compose -p ${project} exec ${service} pylint apps/**/*.py
+	docker-compose -p ${project} exec ${service} pylint ./**/*.py
 
 .PHONY: commit-hash
 commit-hash:	## Print current commit hash

@@ -48,16 +48,16 @@ start-cleaned: down build start  ## Clean all resources before start the project
 
 .PHONY: shell
 shell:  ## Enter in the container shell service=SERVICE_NAME, default core
-	docker compose -p ${project} exec --user ${UID}:${GID} ${service} sh
+	docker compose -p ${project} exec ${service} sh
 
 .PHONY: install-package-in-container
 install-package-in-container:  ## In the container install a package and update requirements.txt file, args: package=PACKEGE_NAME and service=SERVICE_NAME, default core
 	docker compose -p ${project} exec ${service} pip install ${package}
-	docker compose -p ${project} exec --user ${UID}:${GID} ${service} pip freeze > apps/core/requirements.txt
+	docker compose -p ${project} exec ${service} pip freeze > apps/core/requirements.txt
 
 .PHONY: update-reuirements
 update-reuirements:  ## update requirements.txt file, args: package=PACKEGE_NAME and service=SERVICE_NAME, default core
-	docker compose -p ${project} exec --user ${UID}:${GID} ${service} pip freeze > apps/core/requirements.txt
+	docker compose -p ${project} exec ${service} pip freeze > apps/core/requirements.txt
 
 .PHONY: add
 add: start install-package-in-container build  ## Like install-package-in-container but install and build again the container, args: package=PACKEGE_NAME and service=SERVICE_NAME, default core
@@ -76,18 +76,21 @@ setup:	## Setup dev environment for your editor linter
 
 .PHONY: run-test
 run-test:	## Run tests for container, args: service=SERVICE_NAME, default core
-	docker compose -p ${project} exec --workdir /opt/deploy/app --user ${UID}:${GID} ${service} coverage run --source=app -m pytest
+	docker compose -p ${project} exec --workdir /opt/deploy/app ${service} coverage run --source=app -m pytest
 
 # DB COMMANDS
 .PHONY: create-migration
 create-migration:	## Create db migration with message, args: message=MIGRATION_NAME and service=SERVICE_NAME, default core
-	docker compose -p ${project} exec --user ${UID}:${GID} ${service} alembic revision --autogenerate -m "${message}"
+	docker compose -p ${project} exec ${service} alembic revision --autogenerate -m "${message}"
 
 .PHONY: apply-migration
 apply-migration:	## Perform db migration, args: service=SERVICE_NAME, default core
-	docker compose -p ${project} exec --user ${UID}:${GID} ${service} alembic upgrade head
+	docker compose -p ${project} exec ${service} alembic upgrade head
 
 # UTILS COMMANDS
+.PHONY: lint
+lint:
+	docker-compose -p ${project} exec ${service} pylint apps/**/*.py
 
 .PHONY: commit-hash
 commit-hash:	## Print current commit hash

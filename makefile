@@ -76,7 +76,7 @@ setup:	## Setup dev environment for your editor linter
 
 .PHONY: run-test
 run-test:	## Run tests for container, args: service=SERVICE_NAME, default core
-	docker compose -p ${project} exec --workdir /opt/deploy/app ${service} coverage run --source=app -m pytest
+	docker compose -p ${project} exec ${service} sh scripts/tests.sh
 
 # DB COMMANDS
 .PHONY: create-migration

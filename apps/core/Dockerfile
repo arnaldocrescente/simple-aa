@@ -9,8 +9,10 @@ RUN mkdir -p /opt/deploy/scripts
 
 WORKDIR /opt/deploy
 
-COPY ./scripts/entrypoint.sh ./scripts/entrypoint.sh
-RUN chmod +x ./scripts/entrypoint.sh
+COPY ./scripts/ ./scripts/
+
+RUN chmod -R +x ./scripts/tests.sh
+RUN chmod -R +x ./scripts/entrypoint.sh
 
 RUN apk add --update curl && \
     rm -rf /var/cache/apk/*

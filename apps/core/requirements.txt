@@ -1,0 +1,13 @@
+alembic
+fastapi
+uvicorn[standard]
+pytest
+requests
+pydantic
+pyjwt
+sqlmodel
+psycopg[binary]
+passlib
+pydantic_settings
+coverage
+pylint

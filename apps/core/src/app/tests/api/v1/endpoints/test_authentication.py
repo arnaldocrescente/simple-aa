@@ -4,7 +4,7 @@ from sqlmodel import Session
 from app.core.config import settings
 from app.core.otp.base_otp import BaseOTP
 from app.models.auth import LoginInput, OTPVerifyPayload
-from app.tests.utils.user import init_tester_user
+from app.tests.utils.user import init_mfa_tester_user, init_tester_user
 
 
 def test_login_wrong_credentials(client: TestClient, db: Session):
@@ -34,7 +34,7 @@ def test_login(client: TestClient, db: Session):
 
 def test_verify_wrong_otp(client: TestClient, db: Session):
     wrong_otp = "WRONG"
-    tester_user = init_tester_user(db)
+    tester_user = init_mfa_tester_user(db)
 
     data = OTPVerifyPayload(otp=wrong_otp, user_id=tester_user.id)
     r = client.post(
@@ -47,7 +47,7 @@ def test_verify_wrong_otp(client: TestClient, db: Session):
 
 
 def test_verify_otp(client: TestClient, db: Session, otp_generator: BaseOTP):
-    tester_user = init_tester_user(db)
+    tester_user = init_mfa_tester_user(db)
     good_otp = otp_generator.generate(tester_user)
 
     data = OTPVerifyPayload(otp=good_otp, user_id=tester_user.id)

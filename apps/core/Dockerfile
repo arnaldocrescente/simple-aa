@@ -9,8 +9,10 @@ RUN mkdir -p /opt/deploy/scripts
 
 WORKDIR /opt/deploy
 
-COPY ./scripts ./scripts
-RUN chmod -R +x ./scripts
+COPY ./scripts/ ./scripts/
+
+RUN chmod -R +x ./scripts/tests.sh
+RUN chmod -R +x ./scripts/entrypoint.sh
 
 RUN apk add --update curl && \
     rm -rf /var/cache/apk/*
@@ -23,6 +25,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY ./src/app ./app
 
-COPY scripts/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["scripts/entrypoint.sh"]

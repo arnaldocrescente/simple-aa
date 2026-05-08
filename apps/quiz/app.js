@@ -456,7 +456,20 @@
 
     active.session.questions.forEach((q, qi) => {
       const block = el('div', { class: 'question-block', id: `q-${qi}` });
-      block.appendChild(el('div', { class: 'q-num', style: { fontSize: '13px', color: 'var(--muted)', marginBottom: '8px' } }, `Domanda ${qi + 1}`));
+      const hasAnswer = active.answers[qi] !== null && active.answers[qi] !== undefined;
+      const headerRow = el('div', {
+        style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' },
+      }, [
+        el('div', { style: { fontSize: '13px', color: 'var(--muted)' } }, `Domanda ${qi + 1}`),
+        hasAnswer
+          ? el('button', {
+              class: 'btn ghost',
+              style: { padding: '4px 10px', fontSize: '12px' },
+              on: { click: () => { active.answers[qi] = null; render(); } },
+            }, 'Annulla risposta')
+          : el('span', { style: { fontSize: '12px', color: 'var(--muted)' } }, 'Non risposta'),
+      ]);
+      block.appendChild(headerRow);
       block.appendChild(el('div', { class: 'question-text' }, q.question));
       const list = el('div', { class: 'answer-list' });
       q.answers.forEach((aText, ai) => {
@@ -464,7 +477,7 @@
         const item = el('div', {
           class: 'answer' + (isSel ? ' selected' : ''),
           on: { click: () => {
-            active.answers[qi] = ai;
+            active.answers[qi] = isSel ? null : ai;
             render();
           } },
         }, [

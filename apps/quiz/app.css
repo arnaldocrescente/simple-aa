@@ -398,6 +398,45 @@ footer.app-footer {
   text-align: center;
 }
 
+/* ----- Donation ----- */
+.donation-card h2 { font-size: 17px; }
+.donation-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.donation-presets .btn {
+  min-width: 64px;
+  text-align: center;
+  text-decoration: none;
+}
+.donation-custom {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.donation-custom input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  font-family: inherit;
+  min-width: 0;
+}
+.donation-custom input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.donation-custom .currency-suffix {
+  color: var(--muted);
+  font-size: 13px;
+  margin-left: -4px;
+}
+
 /* ----- Consent banner ----- */
 .consent-banner {
   position: fixed;

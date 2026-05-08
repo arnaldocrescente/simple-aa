@@ -12,11 +12,18 @@
   const EXAM_QUESTIONS = 60;
   const EXAM_DURATION_MS = 90 * 60 * 1000;     // 90 min
 
-  // Configuration. To enable Microsoft Clarity, paste your project ID below
-  // (found in clarity.microsoft.com → Settings → Setup). Leave empty to
-  // disable analytics entirely.
+  // Configuration.
+  //   clarityProjectId   Microsoft Clarity Project ID (10 chars) — found
+  //                      in clarity.microsoft.com → Settings → Setup.
+  //   paypalMeUsername   PayPal.me username for donations (the part after
+  //                      paypal.me/ in your link). Leave empty to hide
+  //                      the donation card.
+  //   paypalCurrency     Currency code appended to the PayPal.me link.
+  // Leaving any value empty disables that feature.
   const CONFIG = {
     clarityProjectId: '',
+    paypalMeUsername: '',
+    paypalCurrency: 'EUR',
   };
 
   // ----- Consent / Analytics -----
@@ -443,7 +450,59 @@
       ]));
     }
 
+    if (CONFIG.paypalMeUsername) {
+      wrap.appendChild(renderDonationCard());
+    }
+
     return wrap;
+  }
+
+  function paypalUrl(amount) {
+    const u = encodeURIComponent(CONFIG.paypalMeUsername);
+    const a = String(amount).replace(',', '.');
+    return `https://www.paypal.com/paypalme/${u}/${a}${CONFIG.paypalCurrency}`;
+  }
+
+  function renderDonationCard() {
+    const presets = [1, 2, 5, 10];
+    const card = el('div', { class: 'card donation-card', style: { marginTop: '24px' } });
+    card.appendChild(el('h2', {}, 'Ti è utile? Offrimi un caffè ☕'));
+    card.appendChild(el('p', {}, 'Se questa app ti sta aiutando a prepararti, puoi supportare lo sviluppo con una piccola donazione. Apre PayPal in una nuova scheda.'));
+
+    const presetRow = el('div', { class: 'donation-presets' },
+      presets.map((eur) => el('a', {
+        class: 'btn secondary',
+        href: paypalUrl(eur),
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      }, `€${eur}`))
+    );
+    card.appendChild(presetRow);
+
+    const customRow = el('form', {
+      class: 'donation-custom',
+      on: { submit: (e) => {
+        e.preventDefault();
+        const v = customRow.querySelector('input').value.trim();
+        if (!v) return;
+        const num = parseFloat(v.replace(',', '.'));
+        if (!isFinite(num) || num <= 0) return;
+        window.open(paypalUrl(num.toFixed(2)), '_blank', 'noopener');
+      } },
+    }, [
+      el('input', {
+        type: 'number',
+        min: '0.5',
+        step: '0.5',
+        placeholder: 'Importo a piacere',
+        'aria-label': 'Importo personalizzato',
+      }),
+      el('span', { class: 'currency-suffix' }, CONFIG.paypalCurrency),
+      el('button', { class: 'btn', type: 'submit' }, 'Dona'),
+    ]);
+    card.appendChild(customRow);
+
+    return card;
   }
 
   function renderSessionCard(s, i, result) {

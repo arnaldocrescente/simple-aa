@@ -4,12 +4,42 @@
 
   const QUIZ_DATA = JSON.parse(document.getElementById('quiz-data').textContent);
   const STORAGE_KEY = 'quiz-state-v1';
+  const CONSENT_KEY = 'quiz-consent-v1';
 
   const EXERCISE_COUNT = 10;
   const QUESTIONS_PER_EXERCISE = 30;          // nominal
   const EXERCISE_DURATION_MS = 60 * 60 * 1000; // 60 min
   const EXAM_QUESTIONS = 60;
   const EXAM_DURATION_MS = 90 * 60 * 1000;     // 90 min
+
+  // Configuration. To enable Microsoft Clarity, paste your project ID below
+  // (found in clarity.microsoft.com → Settings → Setup). Leave empty to
+  // disable analytics entirely.
+  const CONFIG = {
+    clarityProjectId: '',
+  };
+
+  // ----- Consent / Analytics -----
+  function getConsent() {
+    try { return localStorage.getItem(CONSENT_KEY); } catch { return null; }
+  }
+  function setConsent(value) {
+    try { localStorage.setItem(CONSENT_KEY, value); } catch {}
+  }
+  function loadClarity(projectId) {
+    if (!projectId || window.__clarityLoaded) return;
+    window.__clarityLoaded = true;
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+      t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, 'clarity', 'script', projectId);
+  }
+  function applyConsent() {
+    if (getConsent() === 'accepted') {
+      loadClarity(CONFIG.clarityProjectId);
+    }
+  }
 
   // ----- Storage -----
   const persisted = {
@@ -235,6 +265,25 @@
     root.appendChild(content);
     root.appendChild(renderFooter());
     if (state.confirmModal) root.appendChild(renderModal(state.confirmModal));
+    if (!getConsent()) root.appendChild(renderConsentBanner());
+  }
+
+  function renderConsentBanner() {
+    const accept = () => { setConsent('accepted'); applyConsent(); render(); };
+    const reject = () => { setConsent('rejected'); render(); };
+    return el('div', { class: 'consent-banner' }, [
+      el('div', { class: 'consent-text' }, [
+        'Questo sito usa ',
+        el('strong', {}, 'cookie tecnici'),
+        ' (necessari per salvare i tuoi progressi nel browser) e, se accetti, ',
+        el('strong', {}, 'analytics anonimi'),
+        ' (Microsoft Clarity) per capire come viene usata l\'app. Nessun dato viene venduto.',
+      ]),
+      el('div', { class: 'consent-actions' }, [
+        el('button', { class: 'btn ghost', on: { click: reject } }, 'Solo necessari'),
+        el('button', { class: 'btn', on: { click: accept } }, 'Accetta tutto'),
+      ]),
+    ]);
   }
 
   function renderHeader() {
@@ -246,12 +295,24 @@
 
   function renderFooter() {
     return el('footer', { class: 'app-footer' }, [
-      'Banca dati locale — i progressi sono salvati nel browser. ',
-      el('a', {
-        href: '#',
-        class: 'back-link',
-        on: { click: (e) => { e.preventDefault(); confirmReset(); } },
-      }, 'Resetta tutti i dati'),
+      el('div', {}, 'Banca dati locale — i progressi sono salvati nel browser.'),
+      el('div', { style: { marginTop: '4px' } }, [
+        el('a', {
+          href: '#',
+          class: 'back-link',
+          on: { click: (e) => { e.preventDefault(); confirmReset(); } },
+        }, 'Resetta tutti i dati'),
+        ' · ',
+        el('a', {
+          href: '#',
+          class: 'back-link',
+          on: { click: (e) => {
+            e.preventDefault();
+            try { localStorage.removeItem(CONSENT_KEY); } catch {}
+            render();
+          } },
+        }, 'Gestisci cookie'),
+      ]),
     ]);
   }
 
@@ -587,5 +648,6 @@
 
   // ----- Boot -----
   loadPersisted();
+  applyConsent();
   render();
 })();

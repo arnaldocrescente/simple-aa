@@ -397,3 +397,77 @@ footer.app-footer {
   color: var(--muted);
   text-align: center;
 }
+
+/* ----- Mobile ----- */
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  #app { padding: 14px 12px 48px; }
+
+  header.app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+  }
+  header.app-header h1 { font-size: 19px; }
+
+  .card { padding: 16px; }
+  .card h2 { font-size: 16px; }
+
+  .quiz-header {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 12px;
+    top: 0;
+    border-radius: 0;
+    margin: -14px -12px 14px;
+    border-left: none;
+    border-right: none;
+  }
+  .quiz-header .progress { order: 1; flex-basis: 100%; font-size: 12px; }
+  .quiz-header .timer    { order: 2; }
+  .quiz-header .btn      { order: 3; margin-left: auto; padding: 8px 14px; font-size: 13px; }
+
+  .question-block { padding: 16px 14px; }
+  .question-text { font-size: 14.5px; line-height: 1.55; margin-bottom: 14px; }
+  .answer { padding: 12px; gap: 10px; }
+  .answer .marker { width: 24px; height: 24px; font-size: 13px; }
+
+  .session-list { grid-template-columns: 1fr; }
+  .session-card { padding: 14px; }
+
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat { padding: 10px 12px; }
+  .stat .stat-value { font-size: 18px; }
+
+  .recap-question { padding: 14px; }
+  .recap-answer { padding: 10px; font-size: 13.5px; }
+
+  .btn { padding: 11px 16px; font-size: 14px; }
+  .btn-row { gap: 8px; }
+
+  .toast {
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    font-size: 13px;
+  }
+
+  .modal { padding: 18px; }
+}
+
+/* Touch hover handling — avoid sticky :hover on tap devices */
+@media (hover: none) {
+  .btn:hover { background: var(--primary); }
+  .btn.secondary:hover { background: var(--bg-3); }
+  .btn.ghost:hover { background: transparent; }
+  .btn.danger:hover { background: var(--danger); }
+  .btn.success:hover { background: var(--success); }
+  .answer:hover { background: var(--bg); }
+  .answer.selected:hover { background: rgba(59, 130, 246, 0.12); }
+}
